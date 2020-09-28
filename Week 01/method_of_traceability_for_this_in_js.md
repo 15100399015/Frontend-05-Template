@@ -120,3 +120,10 @@ GetBase对应的描述：【Return the base value component of V.】
 
 好，我们看另一个分支，b步骤里的ii和iii。
 
+ii.Let refEnv be GetBase(ref).
+这个上面讲过了
+
+iii.Let thisValue be refEnv.WithBaseObject().
+
+WithBaseObject这个方法我看了，始终返回undefined，所以进了b步骤thisValue始终是undefined了。
+

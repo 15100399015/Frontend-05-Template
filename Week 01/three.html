@@ -238,10 +238,10 @@ function calRange(x, y, type) {
     prevRangeY = tmpY
     prevRangeX = tmpX
     if (type === 'obliqueLeft') {
-        for (let i = 0; i < winCondition; i++) {
+        for (let i = 0; i < winCondition - 1; i++) {
             tmpY--
             tmpX--
-            if (tmpY <= 0 || tmpX <= 0) {
+            if (tmpY < 0 || tmpX < 0) {
                 break
             }
             prevRangeY = tmpY
@@ -249,10 +249,12 @@ function calRange(x, y, type) {
         }
         tmpY = y
         tmpX = x
-        for (let i = 0; i < winCondition; i++) {
+        backRangeY = tmpY
+        backRangeX = tmpX
+        for (let i = 0; i < winCondition - 1; i++) {
             tmpY++
             tmpX++
-            if (tmpX >= pattern.length - 1 || tmpY >= pattern[0].length - 1) {
+            if (tmpX > pattern.length - 1 || tmpY > pattern[0].length - 1) {
                 break
             }
             backRangeY = tmpY
@@ -261,10 +263,10 @@ function calRange(x, y, type) {
         return [[prevRangeX, prevRangeY], [backRangeX, backRangeY]]
     }
     if (type === 'obliqueRight') {
-        for (let i = 0; i < winCondition; i++) {
+        for (let i = 0; i < winCondition - 1; i++) {
             tmpY++
             tmpX--
-            if (tmpY >= pattern[0].length - 1 || tmpX <= 0) {
+            if (tmpY > pattern[0].length - 1 || tmpX < 0) {
                 break
             }
             prevRangeY = tmpY
@@ -272,14 +274,16 @@ function calRange(x, y, type) {
         }
         tmpY = y
         tmpX = x
-        for (let i = 0; i < winCondition; i++) {
+        backRangeY = tmpY
+        backRangeX = tmpX
+        for (let i = 0; i < winCondition - 1; i++) {
             tmpY--
             tmpX++
-            if (tmpX === pattern.length - 1 || tmpY <= 0) {
+            if (tmpX > pattern.length - 1 || tmpY < 0) {
                 break
             }
-            prevRangeY = tmpY
-            prevRangeX = tmpX
+            backRangeY = tmpY
+            backRangeX = tmpX
         }
         return [[prevRangeX, prevRangeY], [backRangeX, backRangeY]]
     }

@@ -18,16 +18,22 @@
 <script>
 
 let pattern = [
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0]
 ]
 
+// let pattern = [
+//     [0, 0, 0],
+//     [0, 0, 0],
+//     [0, 0, 0]
+// ]
+
 let winCondition = 5
+
+let computerAIwinConditon = 3
 
 let color = 1
 
@@ -57,10 +63,7 @@ function move(x, y) {
     }
     color = 3 - color
     
-    // if (willWin(pattern, color)) {
-    //     console.log(color === 2 ? '❌ will winner' : '⭕️ will winner')
-    // }
-    //computerMove()
+    computerMove()
     show()
 }
 
@@ -75,26 +78,6 @@ function computerMove() {
     color = 3 - color
 }
 
-function clone(pattern) {
-    return JSON.parse(JSON.stringify(pattern))
-}
-
-function willWin(pattern, color) {
-    for (let i = 0; i < pattern.length; i++) {
-        for (let j = 0; j < pattern[0].length; j++) {
-            if (pattern[i][j] !== 0) {
-                continue
-            }
-            let tmp = clone(pattern)
-            tmp[i][j] = color
-            if (check(i, j, color, tmp)) {
-                return [i, j]
-            }
-        }
-    }
-    return null
-}
-
 function bestChoice(pattern, color) {
     let p
     if (p = willWin(pattern, color)) {
@@ -107,18 +90,22 @@ function bestChoice(pattern, color) {
     let result = -2
     let point = null
 
-    for (let i = 0; i < pattern.length; i++) {
+    outer:for (let i = 0; i < pattern.length; i++) {
         for (let j = 0; j < pattern[0].length; j++) {
             if (pattern[i][j] !== 0) {
                 continue
             }
             let tmp = clone(pattern)
             tmp[i][j] = color
-            let r = bestChoice(tmp, 3 - color).result
+            let r = bestChoice(tmp, 3 - color)
 
-            if (- r > result) {
-                result = -r
-                point = [i, j]
+            if (- r.result > result) {
+                result = -r.result
+                point = r.point
+            }
+
+            if (result == 1) {
+                break outer
             }
         }
     }
@@ -128,22 +115,43 @@ function bestChoice(pattern, color) {
     }
 }
 
-function check(x, y, colorParam, patternParam) {
+function clone(pattern) {
+    return JSON.parse(JSON.stringify(pattern))
+}
+
+function willWin(pattern, color) {
+    for (let i = 0; i < pattern.length; i++) {
+        for (let j = 0; j < pattern[0].length; j++) {
+            if (pattern[i][j] !== 0) {
+                continue
+            }
+            let tmp = clone(pattern)
+            tmp[i][j] = color
+            if (check(i, j, color, tmp, computerAIwinConditon)) {
+                return [i, j]
+            }
+        }
+    }
+    return null
+}
+
+function check(x, y, colorParam, patternParam, winConditionParam) {
     let winIndex = 0
     let colorTmp = colorParam === undefined ? color : colorParam
     let patternTmp = patternParam === undefined ? pattern : patternParam
+    let winConditionTmp = winConditionParam === undefined ? winCondition : winConditionParam
     let verticalArr = calRange(x,y,'vertical')
     for (let i = verticalArr[0][0]; i <= verticalArr[1][0]; i++) {
         if (patternTmp[i][y] === colorTmp) {
             winIndex ++
-            if (winIndex >= winCondition) {
+            if (winIndex >= winConditionTmp) {
                 break
             }
         } else {
             winIndex = 0
         }
     }
-    if (winIndex >= winCondition) {
+    if (winIndex >= winConditionTmp) {
         return true
     }
     winIndex = 0
@@ -151,25 +159,24 @@ function check(x, y, colorParam, patternParam) {
     for (let i = sideArr[0][1]; i <= sideArr[1][1]; i++) {
         if (patternTmp[x][i] === colorTmp) {
             winIndex ++
-            if (winIndex >= winCondition) {
+            if (winIndex >= winConditionTmp) {
                 break
             }
         } else {
             winIndex = 0
         }
     }
-    if (winIndex >= winCondition) {
+    if (winIndex >= winConditionTmp) {
         return true
     }
     winIndex = 0
-    console.log('obliqueLeft: ', calRange(x,y,'obliqueLeft'))
     let obliqueLeftArr = calRange(x,y,'obliqueLeft')
     let j = obliqueLeftArr[0][1]
     for (let i = obliqueLeftArr[0][0]; i <= obliqueLeftArr[1][0]; i++) {
         // if (patternTmp[i] === undefined) {debugger}
         if (patternTmp[i][j] === colorTmp) {
             winIndex ++
-            if (winIndex >= winCondition) {
+            if (winIndex >= winConditionTmp) {
                 break
             }
         } else {
@@ -177,18 +184,17 @@ function check(x, y, colorParam, patternParam) {
         }
         j++
     }
-    if (winIndex >= winCondition) {
+    if (winIndex >= winConditionTmp) {
         return true
     }
     winIndex = 0
-    console.log('obliqueRight: ', calRange(x,y,'obliqueRight'))
     let obliqueRightArr = calRange(x,y,'obliqueRight')
     j = obliqueRightArr[0][1]
     for (let i = obliqueRightArr[0][0]; i <= obliqueRightArr[1][0]; i++) {
         // if (patternTmp[i] === undefined) {debugger}
         if (patternTmp[i][j] === colorTmp) {
             winIndex ++
-            if (winIndex >= winCondition) {
+            if (winIndex >= winConditionTmp) {
                 break
             }
         } else {
@@ -196,7 +202,7 @@ function check(x, y, colorParam, patternParam) {
         }
         j--
     }
-    if (winIndex >= winCondition) {
+    if (winIndex >= winConditionTmp) {
         return true
     }
 }

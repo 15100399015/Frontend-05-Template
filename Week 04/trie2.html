@@ -1,0 +1,27 @@
+<script>
+function randomWord(length) {
+    var s = ''
+    for (let i = 0; i < length; i++) {
+        s += String.fromCharCode(Math.random() * 26 + 'a'.charCodeAt(0))
+    }
+    return s
+}
+
+let dict = {}, str = '', mostNumStr = '', max = 0;
+
+for (let i = 0; i < 10000; i++) {
+    str = randomWord(4)
+    if (dict[str] !== undefined) {
+        dict[str] = dict[str] + 1
+        if (dict[str] > max) {
+            max = dict[str]
+            mostNumStr = str
+        }
+    } else {
+        dict[str] = 1
+    }
+}
+console.log(dict)
+console.log(mostNumStr)
+console.log(max)
+</script>

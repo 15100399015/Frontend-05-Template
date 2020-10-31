@@ -17,7 +17,7 @@ class Trie {
             node[$] = 0
         }
         node[$]++
-        console.log(node)
+        //console.log(node)
     }
     most() {
         let max = 0
@@ -46,7 +46,9 @@ function randomWord(length) {
 
 let trie = new Trie()
 
-for (let i = 0; i < 1; i++) {
+for (let i = 0; i < 10000; i++) {
     trie.insert(randomWord(4))
 }
+
+console.log(trie)
 </script>

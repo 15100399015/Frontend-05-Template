@@ -1,0 +1,119 @@
+<script>
+        function kmp (source, pattern) {
+            let table = new Array(pattern.length).fill(0)
+            {
+                let i = 1, j = 0
+                while(i < pattern.length) {
+                    //debugger
+                    if (pattern[i] === pattern[j]) {
+                        ++j;
+                        ++i;
+                        table[i] = j;
+                    } else {
+                        if (j > 0) {
+                            j = table[j]
+                        } else {
+                            //table[i] = j;
+                            ++i;
+                        }
+                    }
+                }
+                console.log(table)
+            }
+            let startTag = false, startIndex = 0
+            {
+                let i = 0, j = 0
+                while(i < source.length) {
+                    if (pattern[j] === source[i]) {
+                        ++i;
+                        ++j;
+                        if (startTag === false) {
+                            startIndex = i - 1
+                        }
+                        startTag = true
+                    } else {
+                        if (j > 0) {
+                            j = table[j]
+                            startTag = false
+                        } else {
+                            ++i;
+                            this.startIndex = i
+                            startTag = false
+                        }
+                    }
+                    if (j === pattern.length) {
+                        console.log('startIndex: ', startIndex)
+                        console.log('endIndex: ', i - 1)
+                        return true
+                    }
+                }
+                console.log('startIndex: ', null)
+                console.log('endIndex: ', null)
+                return false
+            }
+        }
+    
+        console.log(kmp('aabaaace', ''))
+    
+        function find(source, pattern) {
+            let starCount = 0
+            for (let i = 0; i < pattern.length; i++) {
+                if (pattern[i] === '*') {
+                    starCount++;
+                }
+            }
+            if (starCount === 0) {
+                for (let i = 0; i < pattern.length; i++) {
+                    if (pattern[i] !== source[i] && pattern[i] !== '?') {
+                        return false
+                    }
+                }
+                return true;
+            }
+    
+            let i = 0;
+            let lastIndex = 0;
+    
+            for (i = 0; pattern[i] !== '*'; i++) {
+                if (pattern[i] !== source[i] && pattern[i] !== '?') {
+                    return false
+                }
+            }
+    
+            lastIndex = i;
+    
+            for (let p = 0; p < starCount - 1; p++) {
+                i++;
+                let subPattrn = ''
+                let tag = true
+                while(pattern[i] !== '*') {
+                    if (pattern[i] === '?') {
+                        tag = kmp(source, subPattrn)
+                        subPattrn = ''
+                    } else {
+                        subPattrn += pattern[i];
+                    }
+                    i++;
+                }
+                if (!tag) {
+                    return false
+                }
+                // let reg = new RegExp(subPattrn.replace(/\?/g, '[\\s\\S]'), 'g');
+                // reg.lastIndex = lastIndex;
+    
+                // if (!reg.exec(source)) {
+                //     return false
+                // }
+    
+                // lastIndex = reg.lastIndex      
+                lastIndex = i   
+            }
+    
+            for (let j = 0; j < source.length - lastIndex && pattern[pattern.length - j] !== '*'; j++) {
+                if (pattern[pattern.length - j] !== source[source.length - j] && pattern[pattern.length - j] !== '?') {
+                    return false
+                }
+            }
+            return true
+        }
+    </script>

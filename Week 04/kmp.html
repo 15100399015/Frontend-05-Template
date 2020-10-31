@@ -1,0 +1,58 @@
+<script>
+
+    function kmp (source, pattern) {
+        let table = new Array(pattern.length).fill(0)
+        {
+            let i = 1, j = 0
+            while(i < pattern.length) {
+                //debugger
+                if (pattern[i] === pattern[j]) {
+                    ++j;
+                    ++i;
+                    table[i] = j;
+                } else {
+                    if (j > 0) {
+                        j = table[j]
+                    } else {
+                        //table[i] = j;
+                        ++i;
+                    }
+                }
+            }
+            console.log(table)
+        }
+        let startTag = false, startIndex = 0
+        {
+            let i = 0, j = 0
+            while(i < source.length) {
+                if (pattern[j] === source[i]) {
+                    ++i;
+                    ++j;
+                    if (startTag === false) {
+                        startIndex = i - 1
+                    }
+                    startTag = true
+                } else {
+                    if (j > 0) {
+                        j = table[j]
+                        startTag = false
+                    } else {
+                        ++i;
+                        this.startIndex = i
+                        startTag = false
+                    }
+                }
+                if (j === pattern.length) {
+                    console.log('startIndex: ', startIndex)
+                    console.log('endIndex: ', i - 1)
+                    return true
+                }
+            }
+            console.log('startIndex: ', null)
+            console.log('endIndex: ', null)
+            return false
+        }
+    }
+    console.log(kmp('aabaaace', 'aaa'))
+
+</script>

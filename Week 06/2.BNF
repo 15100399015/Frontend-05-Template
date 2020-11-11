@@ -1,0 +1,23 @@
+<Number> = "Number"
+<MultiplicativeExpression> = <Number> |
+ <MultiplicativeExpression> "*" <Number> | 
+ <MultiplicativeExpression> "/" <Number> |
+ 
+
+<AddtiveExpression> = <MultiplicativeExpression> |
+ <AddtiveExpression> "+" <MultiplicativeExpression> |
+ <AddtiveExpression> "-" <MultiplicativeExpression>
+
+
+1 + 2 * 3 = 
+<Number> "+" <Number> "*" <Number> = 
+<MultiplicativeExpression> "+" <MultiplicativeExpression> "*" <Number> = 
+<AddtiveExpression> "+" <MultiplicativeExpression> = 
+<AddtiveExpression>
+
+(1 + 2) * 3 = 
+<Number> "+" <Number> "*" <Number> = 
+<MultiplicativeExpression> "+" <MultiplicativeExpression> "*" <MultiplicativeExpression> = 
+<AddtiveExpression> "+" <MultiplicativeExpression> "*" <MultiplicativeExpression> = 
+<AddtiveExpression> "*" <MultiplicativeExpression> = 
+<AddtiveExpression> "*" <AddtiveExpression>

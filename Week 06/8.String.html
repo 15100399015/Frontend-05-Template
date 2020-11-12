@@ -1,0 +1,80 @@
+<script>
+    function UTF8_Encoding(str) {
+        // 只做4个字节的
+        let result = []
+        // {
+        //     127: ['0xxxxxxx'],
+        //     2047: ['110xxxxx', '10xxxxxx'],
+        //     65535: ['1110xxxx', '10xxxxxx', '10xxxxxx'],
+        //     2097151: ['11110xxx', '10xxxxxx', '10xxxxxx', '10xxxxxx']
+        // }
+        let strDict = {
+            2047: ['110', '10'],
+            65535: ['1110', '10', '10'],
+            2097151: ['11110', '10', '10', '10']
+        }
+        let numDict = {
+            2047: [5, 6],
+            65535: [4, 6, 6],
+            2097151: [3, 6, 6, 6]
+        }
+        let zeroDict = {
+            2047: [5, 6],
+            65535: [4, 6, 6],
+            2097151: [3, 6, 6, 6]
+        }
+        for (let i = 0; i < str.length; i++) {
+            const s = str[i];
+            let code = s.codePointAt()
+            if (code <= 127) {
+                code = `0${code.toString(2)}`
+                result.push(code)
+            } else if (code <= 2047) {
+                subStr(2047, numDict, strDict, result, code.toString(2))
+            }
+            else if (code <= 65535) {
+                subStr(65535, numDict, strDict, result, code.toString(2))
+            }
+            else if (code <= 2097151) {
+                subStr(2097151, numDict, strDict, result, code.toString(2))
+            }
+        }
+
+        return result
+    }
+
+    function subStr(num, numDict, strDict, result, code) {
+        let codeReal = ''
+        let codeRealArr = []
+        let codeIndex = 0
+        let codeArr = code.split('')
+        for (let j = codeArr.length - 1; j >= 0; j--) {
+            codeReal = `${codeArr[j]}${codeReal}`
+            codeIndex++
+            if (codeIndex === 8) {
+                codeRealArr.push(codeReal)
+                codeIndex = 0
+                codeReal = ''
+            }
+        }
+        if (codeReal.length < 8) {
+            for(var i = 0; i < 8 - codeReal.length; i++) {
+                codeReal = "0" + codeReal;     //不够的就在前面补0
+            }
+        }
+        codeRealArr.push(codeReal)
+        console.log(codeRealArr)
+        codeReal = ''
+        for (let j = codeRealArr.length - 1; j >= 0; j--) {
+            codeReal = `${codeReal}${codeRealArr[j]}`
+        }
+        console.log(codeReal)
+        let subIndex = 0
+        for (let j = 0; j < numDict[num].length; j++) {
+            result.push(`${strDict[num][j]}${codeReal.substring (subIndex, subIndex + numDict[num][j])}`)
+            subIndex = subIndex + numDict[num][j]
+        }
+    }
+
+    
+</script>

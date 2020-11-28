@@ -1,0 +1,31 @@
+<script>
+    function findTargetStr(source, target) {
+        tagObj = {
+            findIt: false,
+            sourceIndex: 0,
+            statusIndex: 0
+        }
+        while(tagObj.sourceIndex <= source.length - 1) {
+            tagObj = findSingleStr(source[tagObj.sourceIndex], target[tagObj.statusIndex], tagObj)
+            tagObj.findIt = tagObj.statusIndex === target.length
+        }
+        return tagObj.findIt
+    }
+
+    function findSingleStr(sourceStr, targetStr, tagObj) {
+        if (sourceStr === targetStr) {
+            tagObj.statusIndex++
+            tagObj.sourceIndex++
+        } else {
+            if (tagObj.findIt) {
+                tagObj.sourceIndex++
+            } else {
+                tagObj.sourceIndex = tagObj.statusIndex === 0 ? tagObj.sourceIndex + 1 : tagObj.sourceIndex
+            }
+            tagObj.statusIndex = tagObj.findIt ? tagObj.statusIndex : 0
+        }
+        return tagObj
+    }
+
+    console.log(findTargetStr('absabababxfs', 'abababx'))
+</script>

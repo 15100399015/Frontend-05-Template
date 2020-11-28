@@ -1,0 +1,94 @@
+<script>
+    function match(source, pattern) {
+        let functionArr = []
+        function end() {
+            return end
+        }
+        // 生成状态（函数）
+        let functionArrIndex = 0
+        for (let i = pattern.length - 1; i >= 0; i--) { // 从结束状态开始生成，因为都是当前状态决定下一次的状态，所以生成的时候要倒过来
+            if (i === 0) { // 开始状态
+                functionArr.push(new Function('c', 'pattern', 'functionArr', 'end', `if (c === pattern[${i}]) { return functionArr[${functionArrIndex - 1}] } else { return ${start} }`));
+                functionArrIndex++
+                continue;
+            }
+            if (i === pattern.length - 1) { // 结束状态
+                functionArr.push(new Function('c', 'pattern', 'functionArr', 'end',  `if (c === pattern[${i}]) { return end } else { return ${start}(c, pattern, functionArr, end) }`));
+                functionArrIndex++
+                continue;
+            }
+            // 中间状态
+            functionArr.push(new Function('c', 'pattern', 'functionArr', 'end', `if (c === pattern[${i}]) { return functionArr[${functionArrIndex - 1}] } else { return ${start}(c, pattern, functionArr, end) }`));
+            functionArrIndex++
+        }
+        let state = start
+        function start(c, pattern, functionArr, end) {
+            if (c === pattern[0]) {
+                if (functionArr.length === 1) {
+                    return end
+                } else {
+                    return functionArr[pattern.length -2]
+                }
+            } else {
+                return start
+            }
+        }
+        for (const c of source) {
+            state = state(c, pattern, functionArr, end)
+        }
+        return state === end
+    }
+
+    // function foundA(c) {
+    //     if (c === 'b') {
+    //         return foundA2
+    //     } else {
+    //         return start(c)
+    //     }
+    // }
+
+    // function foundA2(c) {
+    //     if (c === 'a') {
+    //         return foundB2
+    //     } else {
+    //         return start(c)
+    //     }
+    // }
+
+    // function foundB2(c) {
+    //     if (c === 'b') {
+    //         return foundA3
+    //     } else {
+    //         return start(c)
+    //     }
+    // }
+
+    // function foundA3(c) {
+    //     if (c === 'a') {
+    //         return foundB3
+    //     } else {
+    //         return start(c)
+    //     }
+    // }
+
+    // function foundB3(c) {
+    //     if (c === 'b') {
+    //         return foundX
+    //     } else {
+    //         return start(c)
+    //     }
+    // }
+
+    // function foundX(c) {
+    //     if (c === 'x') {
+    //         return end
+    //     } else {
+    //         return start(c)
+    //     }
+    // }
+
+    //console.log(match('aaabcabasabababsabababx', 'abababx'))
+    //console.log(match('aaabcabasabababsabababx', 'abababs'))
+    //console.log(match('aaabcabasabababsabababx', 'a'))
+    console.log(match('aaabcabasabababsabababx', 'as'))
+</script>

@@ -1,0 +1,14 @@
+<script>
+    function findTargetStr(source, target) {
+        const chars = [...source]
+        let findIt = false
+        chars.forEach(str => {
+            if (str === target) {
+                findIt = true
+            }
+        })
+        return findIt
+    }
+
+    console.log(findTargetStr('bcdefga', 'a'))
+</script>

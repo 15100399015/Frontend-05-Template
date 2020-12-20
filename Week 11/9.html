@@ -1,0 +1,214 @@
+<html>
+    <body id="body">
+        <div>
+            <div></div>
+            <div>
+                <span class="class"></span>
+            </div>
+            <div>
+                <div id="id" class="class cls2"></div>
+            </div>
+            <div></div>
+        </div>
+    </body>
+</html>
+
+<script>
+    function match(selector, node) {
+        // 匹配简单选择器的tag、id、class
+        // 匹配复合选择器（与的关系）
+        // 匹配复杂选择器的空格选择器、大于号选择器
+        let path = [];
+        let idRuleArr = ''
+        let classRuleArr = ''
+        let tagRuleArr = ''
+        let idRuletwoDimension = []
+        let classRuletwoDimension = []
+        let tagRuletwoDimension = []
+        let isMatch = false
+        console.log()
+        let selectorArr = selector.split(" ")
+        selectorArr.forEach(str => {
+            idRuleArr = ''
+            classRuleArr = ''
+            tagRuleArr = ''
+            matchRule(str)
+            classRuleArr = classRuleArr.split("|")
+            classRuleArr[classRuleArr.length - 1] === ''
+                ? classRuleArr.length = classRuleArr.length - 1
+                : '';
+            idRuleArr = idRuleArr.split("|")
+            idRuleArr[idRuleArr.length - 1] === ''
+                ? idRuleArr.length = idRuleArr.length - 1
+                : '';
+            tagRuleArr = tagRuleArr.split("|")
+            tagRuleArr[tagRuleArr.length - 1] === ''
+                ? tagRuleArr.length = tagRuleArr.length - 1
+                : '';
+            idRuletwoDimension.push(idRuleArr)
+            classRuletwoDimension.push(classRuleArr)
+            tagRuletwoDimension.push(tagRuleArr)
+            console.log(idRuletwoDimension)
+            console.log(classRuletwoDimension)
+            console.log(tagRuletwoDimension)
+        })
+        
+        function recursion(selector, node) {
+            path.push(node)
+            if(node && node.nodeType === 1){
+                console.log(path);
+                let nodeClassName = node.className.split(" ")
+                let nodeId = node.id.split(" ")
+                let nodeTagName = node.tagName.split(" ")
+                nodeTagName[0] = nodeTagName[0].toLowerCase()
+                let classOk = []
+                let idOk = false
+                let tagOk = false
+                if (selectorArr.length === 1) {
+                    nodeClassName[nodeClassName.length - 1] === ''
+                        ? nodeClassName.length = nodeClassName.length - 1
+                        : '';
+                    nodeId[nodeId.length - 1] === ''
+                        ? nodeId.length = nodeId.length - 1
+                        : '';
+                    nodeTagName[nodeTagName.length - 1] === ''
+                        ? nodeTagName.length = nodeTagName.length - 1
+                        : '';
+                    if (nodeId.length !== 0) {
+                        //debugger
+                    }
+                    classRuletwoDimension[0].forEach(ruleStr => {
+                        nodeClassName.forEach(str => {
+                            if (str === ruleStr) {
+                                classOk.push(true)
+                            }
+                        })
+                    })
+                    classOk = classOk.length === classRuletwoDimension[0].length
+                    idOk = nodeId.length !== 0 && idRuletwoDimension[0][0].length !== 0 && nodeId[0] === idRuletwoDimension[0][0]
+                    tagOk = nodeTagName.length !== 0 && tagRuletwoDimension[0][0].length !== 0 && nodeTagName[0] === tagRuletwoDimension[0][0]
+                    tagOk = tagRuletwoDimension[0].length === 0 ? true : idOk
+                    idOk = idRuletwoDimension[0].length === 0 ? true : idOk
+                    if (classOk && idOk && tagOk) {
+                        isMatch = true
+                    }
+                } else {
+                    //classRuletwoDimension
+                    //tagRuletwoDimension
+                    //idRuletwoDimension
+                    classRuletwoDimension[classRuletwoDimension.length - 1].forEach(ruleStr => {
+                        nodeClassName.forEach(str => {
+                            if (str === ruleStr) {
+                                classOk.push(true)
+                            }
+                        })
+                    })
+                    classOk = classOk.length === classRuletwoDimension[classRuletwoDimension.length - 1].length
+                    idOk = nodeId.length !== 0 && idRuletwoDimension[idRuletwoDimension.length - 1].length !== 0 && nodeId[0] === idRuletwoDimension[idRuletwoDimension.length - 1][0]
+                    tagOk = nodeTagName.length !== 0 && tagRuletwoDimension[tagRuletwoDimension.length - 1].length !== 0 && nodeTagName[0] === tagRuletwoDimension[tagRuletwoDimension.length - 1][0]
+                    tagOk = tagRuletwoDimension[tagRuletwoDimension.length - 1].length === 0 ? true : idOk
+                    idOk = idRuletwoDimension[idRuletwoDimension.length - 1].length === 0 ? true : idOk
+                    if (classOk && idOk && tagOk) {
+                        //classOk = false
+                        //idOk = false
+                        tagOk = false
+                        // TODO 目前还无法匹配多个空格选择器，只能匹配单个空格选择器
+                        // TODO 目前只实现了匹配单个空格选择器中的tag
+                        // 匹配当个空格选择器的id、class也可以做到，但是做不到匹配多个
+                        // 空格选择器的id、class、tag               
+                        for(let i = path.length - 2; i >= 0; i--) {
+                            for(let j = tagRuletwoDimension.length - 1; j >= 0; j--) {
+                                if (tagRuletwoDimension[j].length !== 0 && path[i].tagName.toLowerCase() === tagRuletwoDimension[j][0]) {
+                                    tagOk = true
+                                }
+                            }
+                        }
+                        isMatch = classOk && idOk && tagOk
+                    }
+                }
+            }
+            var i = 0, childNodes = node.childNodes,item;
+            for(; i < childNodes.length ; i++){
+                item = childNodes[i];
+                if(item.nodeType === 1){
+                    //递归先序遍历子节点
+                    recursion(selector, item);
+                }
+            }
+            let newPath = []
+            path.forEach(obj => {
+                if (obj !== node) {
+                    newPath.push(obj)
+                }
+            })
+            path = newPath
+        }
+        recursion(selector, node)
+        function matchRule(string) {
+            let state = start
+            for (const c of string) {
+                state = state(c)
+            }
+        }
+
+        function start(c) {
+            if (c === '#') {
+                return foundIdChar
+            } else if (c === '.') {
+                return foundClassChar
+            } else if (/[a-z]/.test(c)) {
+                return foundTagChar(c)
+            }
+        }
+
+        function foundIdChar(c) {
+            if (c === '#') {
+                idRuleArr = idRuleArr + '|'
+                return start(c)
+            } else if (c === '.') {
+                idRuleArr = idRuleArr + '|'
+                return start(c)
+            } else if (/[a-z]|[1-9]/.test(c)) {
+                idRuleArr = idRuleArr + c
+                return foundIdChar
+            } else if (c === ' ') {
+                return start
+            }
+        }
+
+        function foundClassChar(c) {
+            if (c === '#') {
+                classRuleArr = classRuleArr + '|'
+                return start(c)
+            } else if (c === '.') {
+                classRuleArr = classRuleArr + '|'
+                return start(c)
+            } else if (/[a-z]|[1-9]/.test(c)) {
+                classRuleArr = classRuleArr + c
+                return foundClassChar
+            } else if (c === ' ') {
+                return start
+            }
+        }
+
+        function foundTagChar(c) {
+            if (c === '#') {
+                tagRuleArr = tagRuleArr + '|'
+                return start(c)
+            } else if (c === '.') {
+                tagRuleArr = tagRuleArr + '|'
+                return start(c)
+            } else if (/[a-z]/.test(c)) {
+                tagRuleArr = tagRuleArr + c
+                return foundTagChar
+            } else if (c === ' ') {
+                return start
+            }
+        }
+        return isMatch
+    }
+
+    console.log(match("div #id.class.cls2", document.getElementById("body")))
+    //console.log(match("div#id.class.class1", document.getElementById("body")))
+    
+</script>
